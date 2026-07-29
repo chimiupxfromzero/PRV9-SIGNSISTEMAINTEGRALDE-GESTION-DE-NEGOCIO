@@ -303,105 +303,292 @@ export const AsistenteIAModule: React.FC = () => {
         </div>
       )}
 
-      {/* SUBTAB 2: GGUF Model Config */}
+      {/* SUBTAB 2: AI Architecture & Model Selector */}
       {activeSubTab === "CONFIG_LOCAL" && (
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6 text-xs text-white">
           <div className="border-b border-slate-800 pb-3">
             <h3 className="font-bold text-base text-slate-100 flex items-center gap-2">
-              <Cpu className="w-5 h-5 text-indigo-400" /> Configuración del Motor de Inteligencia Artificial
+              <Cpu className="w-5 h-5 text-indigo-400" /> Configuración y Selección de Modelo de Inteligencia Artificial
             </h3>
             <p className="text-slate-400 mt-1">
-              Seleccione si prefiere la API en la nube (Gemini 3.6-Flash) o la ejecución 100% local sin internet con modelos cuantizados GGUF.
+              Seleccione el proveedor y modelo de IA (Gratuitos en Nube, Gemini Oficial, OpenRouter / Freebuff o Ejecución Local 100% Offline en su PC).
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4 bg-slate-950 p-4 border border-slate-800 rounded-2xl">
-              <h4 className="font-bold text-slate-200 text-sm">Selección de Arquitectura</h4>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left: Architecture Provider Selection */}
+            <div className="space-y-4 bg-slate-950 p-5 border border-slate-800 rounded-2xl">
+              <h4 className="font-bold text-slate-200 text-sm border-b border-slate-800 pb-2">
+                1. Selección de Proveedor
+              </h4>
 
-              <div className="space-y-2">
+              <div className="space-y-3">
+                {/* Gemini Cloud */}
                 <label
-                  onClick={() => updateAISettings({ mode: "CLOUD_GEMINI" })}
+                  onClick={() =>
+                    updateAISettings({
+                      mode: "CLOUD_GEMINI",
+                      provider: "gemini",
+                      selectedModel: "gemini-3.6-flash",
+                    })
+                  }
                   className={`p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition ${
                     aiSettings.mode === "CLOUD_GEMINI"
-                      ? "bg-indigo-950 border-indigo-500 text-indigo-200"
-                      : "bg-slate-900 border-slate-800 text-slate-400"
+                      ? "bg-blue-950/60 border-blue-500 text-blue-200 shadow-lg shadow-blue-500/10"
+                      : "bg-slate-900/60 border-slate-800 text-slate-400 hover:border-slate-700"
                   }`}
                 >
                   <div>
-                    <div className="font-bold text-slate-100">Nube: Gemini 3.6-Flash API</div>
-                    <div className="text-[10px] text-slate-400">
-                      Alta velocidad y razonamiento avanzado.
+                    <div className="font-bold text-slate-100 flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-blue-400" /> Google Gemini (Gratuito / Oficial)
+                    </div>
+                    <div className="text-[10px] text-slate-400 mt-0.5">
+                      Gemini 3.6-Flash, 2.5-Flash o 2.5-Pro con razonamiento multimodal rápido.
                     </div>
                   </div>
                   {aiSettings.mode === "CLOUD_GEMINI" && (
-                    <CheckCircle2 className="w-5 h-5 text-indigo-400" />
+                    <CheckCircle2 className="w-5 h-5 text-blue-400 shrink-0" />
                   )}
                 </label>
 
+                {/* OpenRouter Free */}
                 <label
-                  onClick={() => updateAISettings({ mode: "LOCAL_GGUF" })}
+                  onClick={() =>
+                    updateAISettings({
+                      mode: "OPENROUTER_FREE",
+                      provider: "openrouter",
+                      selectedModel: "meta-llama/llama-3.2-3b-instruct:free",
+                    })
+                  }
                   className={`p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition ${
-                    aiSettings.mode === "LOCAL_GGUF"
-                      ? "bg-emerald-950 border-emerald-500 text-emerald-200"
-                      : "bg-slate-900 border-slate-800 text-slate-400"
+                    aiSettings.mode === "OPENROUTER_FREE"
+                      ? "bg-purple-950/60 border-purple-500 text-purple-200 shadow-lg shadow-purple-500/10"
+                      : "bg-slate-900/60 border-slate-800 text-slate-400 hover:border-slate-700"
                   }`}
                 >
                   <div>
-                    <div className="font-bold text-slate-100">Local GGUF: Ollama / Llama.cpp</div>
-                    <div className="text-[10px] text-slate-400">
-                      Privacidad total y ejecución 100% sin internet en la PC del usuario.
+                    <div className="font-bold text-slate-100 flex items-center gap-1.5">
+                      <Code2 className="w-4 h-4 text-purple-400" /> OpenRouter Free (Estilo OpenCode / Freebuff)
+                    </div>
+                    <div className="text-[10px] text-slate-400 mt-0.5">
+                      Modelos de código abierto sin costo (Llama 3.2, DeepSeek R1, Qwen 2.5 Coder).
+                    </div>
+                  </div>
+                  {aiSettings.mode === "OPENROUTER_FREE" && (
+                    <CheckCircle2 className="w-5 h-5 text-purple-400 shrink-0" />
+                  )}
+                </label>
+
+                {/* Groq Cloud */}
+                <label
+                  onClick={() =>
+                    updateAISettings({
+                      mode: "GROQ_FREE",
+                      provider: "groq",
+                      selectedModel: "llama-3.2-3b-preview",
+                    })
+                  }
+                  className={`p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition ${
+                    aiSettings.mode === "GROQ_FREE"
+                      ? "bg-amber-950/60 border-amber-500 text-amber-200 shadow-lg shadow-amber-500/10"
+                      : "bg-slate-900/60 border-slate-800 text-slate-400 hover:border-slate-700"
+                  }`}
+                >
+                  <div>
+                    <div className="font-bold text-slate-100 flex items-center gap-1.5">
+                      <Cpu className="w-4 h-4 text-amber-400" /> Groq Cloud LPU (Ultra Alta Velocidad)
+                    </div>
+                    <div className="text-[10px] text-slate-400 mt-0.5">
+                      Inferencia instantánea con chips LPU en la nube.
+                    </div>
+                  </div>
+                  {aiSettings.mode === "GROQ_FREE" && (
+                    <CheckCircle2 className="w-5 h-5 text-amber-400 shrink-0" />
+                  )}
+                </label>
+
+                {/* Local GGUF Ollama */}
+                <label
+                  onClick={() =>
+                    updateAISettings({
+                      mode: "LOCAL_GGUF",
+                      provider: "ollama",
+                      selectedModel: aiSettings.ggufModelName || "llama3.2:3b",
+                    })
+                  }
+                  className={`p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition ${
+                    aiSettings.mode === "LOCAL_GGUF"
+                      ? "bg-emerald-950/60 border-emerald-500 text-emerald-200 shadow-lg shadow-emerald-500/10"
+                      : "bg-slate-900/60 border-slate-800 text-slate-400 hover:border-slate-700"
+                  }`}
+                >
+                  <div>
+                    <div className="font-bold text-slate-100 flex items-center gap-1.5">
+                      <HardDrive className="w-4 h-4 text-emerald-400" /> Local GGUF (Ollama / Llama.cpp 100% Offline)
+                    </div>
+                    <div className="text-[10px] text-slate-400 mt-0.5">
+                      Ejecución privada en su propia PC sin requerir conexión a internet.
                     </div>
                   </div>
                   {aiSettings.mode === "LOCAL_GGUF" && (
-                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
                   )}
                 </label>
               </div>
             </div>
 
-            <div className="space-y-4 bg-slate-950 p-4 border border-slate-800 rounded-2xl">
-              <h4 className="font-bold text-slate-200 text-sm flex items-center gap-2">
-                <HardDrive className="w-4 h-4 text-emerald-400" /> Parámetros GGUF Local
+            {/* Right: Model Selection & API Keys */}
+            <div className="space-y-4 bg-slate-950 p-5 border border-slate-800 rounded-2xl">
+              <h4 className="font-bold text-slate-200 text-sm border-b border-slate-800 pb-2 flex items-center justify-between">
+                <span>2. Parámetros del Modelo y API Key</span>
+                <span className="text-[10px] font-mono text-indigo-400">
+                  Modo Activo: {aiSettings.mode}
+                </span>
               </h4>
 
-              <div>
-                <label className="block text-slate-300 font-medium mb-1">
-                  URL Servidor Local (Endpoint)
-                </label>
-                <input
-                  type="text"
-                  value={aiSettings.ggufEndpoint}
-                  onChange={(e) => updateAISettings({ ggufEndpoint: e.target.value })}
-                  placeholder="http://localhost:11434"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 font-mono text-emerald-400 focus:outline-none"
-                />
-              </div>
+              {/* Gemini Models */}
+              {aiSettings.mode === "CLOUD_GEMINI" && (
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1">Modelo Gemini</label>
+                    <select
+                      value={aiSettings.selectedModel || "gemini-3.6-flash"}
+                      onChange={(e) => updateAISettings({ selectedModel: e.target.value })}
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 font-mono text-slate-200 focus:outline-none"
+                    >
+                      <option value="gemini-3.6-flash">gemini-3.6-flash (Recomendado - Rápido y Inteligente)</option>
+                      <option value="gemini-2.5-flash">gemini-2.5-flash (Alta Eficiencia)</option>
+                      <option value="gemini-2.5-pro">gemini-2.5-pro (Razonamiento Complejo)</option>
+                    </select>
+                  </div>
 
-              <div>
-                <label className="block text-slate-300 font-medium mb-1">
-                  Nombre del Modelo GGUF Cargado
-                </label>
-                <input
-                  type="text"
-                  value={aiSettings.ggufModelName}
-                  onChange={(e) => updateAISettings({ ggufModelName: e.target.value })}
-                  placeholder="llama3.2:3b-instruct-q4_K_M"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 font-mono text-slate-200 focus:outline-none"
-                />
-              </div>
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1">
+                      API Key Personal de Gemini (Opcional)
+                    </label>
+                    <input
+                      type="password"
+                      placeholder="AIzaSy... (Dejar en blanco para usar clave predeterminada)"
+                      value={aiSettings.customApiKey || ""}
+                      onChange={(e) => updateAISettings({ customApiKey: e.target.value })}
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 font-mono text-xs text-blue-300 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              )}
 
-              <button
-                type="button"
-                onClick={testGgufConnection}
-                className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 rounded-xl font-bold text-xs transition cursor-pointer"
-              >
-                Probar Conexión con Servidor GGUF
-              </button>
+              {/* OpenRouter Models */}
+              {aiSettings.mode === "OPENROUTER_FREE" && (
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1">Modelo de Código Abierto (OpenRouter)</label>
+                    <select
+                      value={aiSettings.selectedModel || "meta-llama/llama-3.2-3b-instruct:free"}
+                      onChange={(e) => updateAISettings({ selectedModel: e.target.value })}
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 font-mono text-slate-200 focus:outline-none"
+                    >
+                      <option value="meta-llama/llama-3.2-3b-instruct:free">
+                        meta-llama/llama-3.2-3b-instruct:free (Gratis)
+                      </option>
+                      <option value="deepseek/deepseek-r1:free">
+                        deepseek/deepseek-r1:free (Gratis - Razonamiento R1)
+                      </option>
+                      <option value="qwen/qwen-2.5-coder-32b:free">
+                        qwen/qwen-2.5-coder-32b:free (Gratis - Especializado)
+                      </option>
+                      <option value="google/gemini-2.5-flash:free">
+                        google/gemini-2.5-flash:free (Gratis OpenRouter)
+                      </option>
+                    </select>
+                  </div>
 
-              {testGgufStatus && (
-                <div className="p-3 bg-slate-900 border border-slate-800 rounded-xl text-xs text-emerald-300 font-mono">
-                  {testGgufStatus}
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1">API Key de OpenRouter</label>
+                    <input
+                      type="password"
+                      placeholder="sk-or-v1-..."
+                      value={aiSettings.customApiKey || ""}
+                      onChange={(e) => updateAISettings({ customApiKey: e.target.value })}
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 font-mono text-xs text-purple-300 focus:outline-none"
+                    />
+                    <p className="text-[10px] text-slate-400 mt-1">
+                      Obtén tu API key gratuita en <a href="https://openrouter.ai" target="_blank" rel="noreferrer" className="text-purple-400 underline">openrouter.ai</a>.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Groq Models */}
+              {aiSettings.mode === "GROQ_FREE" && (
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1">Modelo Groq Cloud</label>
+                    <select
+                      value={aiSettings.selectedModel || "llama-3.2-3b-preview"}
+                      onChange={(e) => updateAISettings({ selectedModel: e.target.value })}
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 font-mono text-slate-200 focus:outline-none"
+                    >
+                      <option value="llama-3.2-3b-preview">llama-3.2-3b-preview (Ultra Rápido)</option>
+                      <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile (Alta Capacidad)</option>
+                      <option value="mixtral-8x7b-32768">mixtral-8x7b-32768 (Contexto Extendido)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1">API Key de Groq Cloud</label>
+                    <input
+                      type="password"
+                      placeholder="gsk_..."
+                      value={aiSettings.customApiKey || ""}
+                      onChange={(e) => updateAISettings({ customApiKey: e.target.value })}
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 font-mono text-xs text-amber-300 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Local GGUF Ollama Settings */}
+              {aiSettings.mode === "LOCAL_GGUF" && (
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1">
+                      URL del Servidor Ollama Local (Endpoint)
+                    </label>
+                    <input
+                      type="text"
+                      value={aiSettings.ggufEndpoint || "http://localhost:11434"}
+                      onChange={(e) => updateAISettings({ ggufEndpoint: e.target.value })}
+                      placeholder="http://localhost:11434"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 font-mono text-emerald-400 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1">
+                      Nombre del Modelo Ollama / GGUF Instalado
+                    </label>
+                    <input
+                      type="text"
+                      value={aiSettings.ggufModelName || "llama3.2:3b"}
+                      onChange={(e) => updateAISettings({ ggufModelName: e.target.value, selectedModel: e.target.value })}
+                      placeholder="llama3.2:3b, qwen2.5-coder, mistral..."
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 font-mono text-slate-200 focus:outline-none"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={testGgufConnection}
+                    className="w-full py-2.5 bg-emerald-950 hover:bg-emerald-900 border border-emerald-500/40 text-emerald-300 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" /> Probar Conexión con Servidor Ollama Local
+                  </button>
+
+                  {testGgufStatus && (
+                    <div className="p-3 bg-slate-900 border border-slate-800 rounded-xl text-xs text-emerald-300 font-mono">
+                      {testGgufStatus}
+                    </div>
+                  )}
                 </div>
               )}
             </div>

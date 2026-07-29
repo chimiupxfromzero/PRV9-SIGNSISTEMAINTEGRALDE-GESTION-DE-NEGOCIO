@@ -21,7 +21,45 @@ import { PedidosProveedoresModule } from "./components/modules/PedidosProveedore
 import { CompanionMovilModule } from "./components/modules/CompanionMovilModule";
 
 const AppContent: React.FC = () => {
-  const { activeModule } = useApp();
+  const { activeModule, themeConfig, currentTheme } = useApp();
+  const theme = themeConfig?.theme || currentTheme || "frosted_glass";
+
+  let themeBgStyle: React.CSSProperties = {};
+  let ambientLight = null;
+
+  switch (theme) {
+    case "dark_pro":
+      themeBgStyle = { background: "#020617" };
+      break;
+    case "cyber_neon":
+      themeBgStyle = { background: "radial-gradient(circle at top left, #0f172a, #050b14 70%, #02040a 100%)" };
+      ambientLight = (
+        <>
+          <div className="absolute top-0 left-1/3 w-[500px] h-[500px] bg-indigo-500/15 rounded-full blur-[120px] pointer-events-none -translate-y-1/2" />
+          <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/15 rounded-full blur-[120px] pointer-events-none translate-y-1/2" />
+        </>
+      );
+      break;
+    case "emerald_executive":
+      themeBgStyle = { background: "radial-gradient(circle at top left, #064e3b, #022c22 60%, #020617 100%)" };
+      ambientLight = (
+        <div className="absolute top-0 right-1/3 w-[500px] h-[500px] bg-emerald-500/15 rounded-full blur-[120px] pointer-events-none -translate-y-1/2" />
+      );
+      break;
+    case "light_modern":
+      themeBgStyle = { background: "linear-gradient(to bottom right, #f8fafc, #f1f5f9, #e2e8f0)", color: "#0f172a" };
+      break;
+    case "frosted_glass":
+    default:
+      themeBgStyle = { background: "radial-gradient(circle at top left, #1e293b, #0f172a 60%, #020617 100%)" };
+      ambientLight = (
+        <>
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none translate-y-1/2" />
+        </>
+      );
+      break;
+  }
 
   const renderActiveModule = () => {
     switch (activeModule) {
@@ -75,14 +113,11 @@ const AppContent: React.FC = () => {
 
   return (
     <div
-      className="min-h-screen text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white relative overflow-hidden"
-      style={{
-        background: "radial-gradient(circle at top left, #1e293b, #0f172a 60%, #020617 100%)",
-      }}
+      className={`min-h-screen text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white relative overflow-hidden theme-${theme}`}
+      style={themeBgStyle}
     >
-      {/* Decorative ambient ambient light blurs for extra frosted glass depth */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none translate-y-1/2" />
+      {/* Decorative ambient light blurs for theme depth */}
+      {ambientLight}
 
       <Header />
       <div className="flex-1 flex overflow-hidden relative z-10">

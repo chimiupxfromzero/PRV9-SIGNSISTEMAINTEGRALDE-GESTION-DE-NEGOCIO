@@ -195,12 +195,12 @@ export const OnboardingTutorialModal: React.FC<OnboardingTutorialModalProps> = (
   ];
 
   return (
-    <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
-      <div className="bg-slate-900/90 border border-white/20 rounded-3xl p-6 w-full max-w-xl shadow-2xl text-white relative overflow-hidden backdrop-blur-2xl">
+    <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-start sm:items-center justify-center z-50 p-3 sm:p-6 overflow-y-auto">
+      <div className="bg-slate-900/95 border border-white/20 rounded-3xl p-5 sm:p-6 w-full max-w-xl shadow-2xl text-white relative overflow-hidden backdrop-blur-2xl my-auto max-h-[92vh] flex flex-col">
         <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* Modal Header with Mascot Avatar */}
-        <div className="flex items-center justify-between pb-4 border-b border-white/10">
+        <div className="flex items-center justify-between pb-4 border-b border-white/10 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-blue-400/80 shadow-lg relative shrink-0">
               <img
@@ -233,10 +233,10 @@ export const OnboardingTutorialModal: React.FC<OnboardingTutorialModalProps> = (
         </div>
 
         {/* Step Content */}
-        <div className="py-6 min-h-[220px]">{steps[currentStep].content}</div>
+        <div className="py-4 my-auto min-h-[220px] overflow-y-auto">{steps[currentStep].content}</div>
 
         {/* Modal Footer Controls */}
-        <div className="flex items-center justify-between pt-4 border-t border-white/10">
+        <div className="flex items-center justify-between pt-4 border-t border-white/10 shrink-0">
           <div className="flex gap-1.5">
             {steps.map((_, idx) => (
               <div

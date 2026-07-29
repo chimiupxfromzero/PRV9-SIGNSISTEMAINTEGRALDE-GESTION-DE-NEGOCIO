@@ -32,6 +32,7 @@ export const Header: React.FC = () => {
     backupConfig,
     notifications,
     markNotificationRead,
+    clearNotifications,
   } = useApp();
 
   const [showPinModal, setShowPinModal] = useState(false);
@@ -180,17 +181,37 @@ export const Header: React.FC = () => {
           </button>
 
           {showNotifDropdown && (
-            <div className="absolute right-0 mt-2 w-80 bg-slate-900/90 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl z-50 text-xs overflow-hidden">
-              <div className="p-3 bg-white/5 border-b border-white/10 flex justify-between items-center">
+            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-slate-900/95 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl z-50 text-xs overflow-hidden">
+              <div className="p-3 bg-white/5 border-b border-white/10 flex justify-between items-center gap-2">
                 <span className="font-semibold text-slate-200">
-                  Notificaciones del Sistema ({unreadNotifs.length})
+                  Notificaciones ({unreadNotifs.length})
                 </span>
-                <button
-                  onClick={() => setShowNotifDropdown(false)}
-                  className="text-slate-400 hover:text-white"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                <div className="flex items-center gap-2">
+                  {unreadNotifs.length > 0 && (
+                    <button
+                      onClick={() => {
+                        notifications.forEach((n) => markNotificationRead(n.id));
+                      }}
+                      className="text-[10px] text-blue-400 hover:text-blue-300 underline font-medium cursor-pointer"
+                    >
+                      Leídas
+                    </button>
+                  )}
+                  {notifications.length > 0 && (
+                    <button
+                      onClick={() => clearNotifications()}
+                      className="text-[10px] text-rose-400 hover:text-rose-300 underline font-medium cursor-pointer"
+                    >
+                      Limpiar
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setShowNotifDropdown(false)}
+                    className="text-slate-400 hover:text-white cursor-pointer ml-1"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
               <div className="max-h-64 overflow-y-auto divide-y divide-white/5">
                 {notifications.length === 0 ? (

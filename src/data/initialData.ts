@@ -496,8 +496,12 @@ export const INITIAL_BACKUP_CONFIG: CloudBackupConfig = {
 };
 
 export const INITIAL_AI_SETTINGS: AIAssistantSettings = {
-  modelType: "starter_local_gguf",
-  localModelName: "Llama-3.2-3B-Instruct-GGUF",
+  mode: "CLOUD_GEMINI",
+  provider: "gemini",
+  selectedModel: "gemini-3.6-flash",
+  customApiKey: "",
+  ggufEndpoint: "http://localhost:11434",
+  ggufModelName: "llama3.2:3b",
   voiceOutputEnabled: true,
   autoReadVoice: false,
   voiceName: "Kore",
@@ -593,7 +597,7 @@ export const INITIAL_PURCHASE_ORDERS: PurchaseOrder[] = [
 ];
 
 export const INITIAL_THEME_CONFIG: ThemeConfig = {
-  theme: "claro_elegante",
+  theme: "frosted_glass",
   fontSize: "normal",
   compactMode: false,
 };

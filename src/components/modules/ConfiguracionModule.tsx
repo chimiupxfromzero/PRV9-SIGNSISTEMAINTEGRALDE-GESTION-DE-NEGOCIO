@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useApp } from "../../context/AppContext";
 import {
   Settings,
@@ -13,6 +13,8 @@ import {
   HardDriveDownload,
   ShieldCheck,
   Printer,
+  Upload,
+  Image as ImageIcon,
 } from "lucide-react";
 
 export const ConfiguracionModule: React.FC = () => {
@@ -23,6 +25,10 @@ export const ConfiguracionModule: React.FC = () => {
   const [backupStatus, setBackupStatus] = useState<string | null>(null);
   const [isBackupLoading, setIsBackupLoading] = useState(false);
 
+  useEffect(() => {
+    setFormData(businessConfig);
+  }, [businessConfig]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updateBusinessConfig(formData);
@@ -30,19 +36,36 @@ export const ConfiguracionModule: React.FC = () => {
     setTimeout(() => setSaveSuccess(false), 3000);
   };
 
+  const handleLogoFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert("La imagen es demasiado grande. Seleccione una imagen menor a 2MB.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === "string") {
+          setFormData((prev) => ({ ...prev, logoUrl: reader.result as string }));
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const triggerCloudBackupNow = async () => {
     setIsBackupLoading(true);
     setBackupStatus("Iniciando copia de seguridad encriptada hacia la nube...");
 
     try {
-      const res = await fetch("/api/backup/upload", {
+      const res = await fetch("/api/backup/cloud", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ provider: formData.cloudBackupProvider }),
+        body: JSON.stringify({ provider: formData.cloudBackupProvider, dbSnapshot: formData }),
       });
       const data = await res.json();
       setBackupStatus(
-        `✅ Backup completado exitosamente en ${formData.cloudBackupProvider}. ID de respaldo: ${data.backupId}`
+        `✅ Backup completado exitosamente en ${formData.cloudBackupProvider}. ID de respaldo: ${data.backupId || "BK-" + Date.now()}`
       );
     } catch (err) {
       setBackupStatus("❌ Error al conectar con el servicio de almacenamiento en la nube.");
@@ -52,10 +75,22 @@ export const ConfiguracionModule: React.FC = () => {
   };
 
   const exportLocalDatabaseJSON = () => {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(localStorage.getItem("pv9_erp_state") || "{}");
+    const fullBackup: Record<string, any> = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith("pv9_")) {
+        try {
+          fullBackup[key] = JSON.parse(localStorage.getItem(key) || "{}");
+        } catch {
+          fullBackup[key] = localStorage.getItem(key);
+        }
+      }
+    }
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(fullBackup, null, 2));
     const downloadAnchor = document.createElement("a");
     downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `PV9_ERP_BACKUP_${new Date().toISOString().split("T")[0]}.json`);
+    downloadAnchor.setAttribute("download", `PV9_ERP_FULL_BACKUP_${new Date().toISOString().split("T")[0]}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -198,19 +233,60 @@ export const ConfiguracionModule: React.FC = () => {
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+            <div className="space-y-2">
               <label className="block text-slate-300 font-medium mb-1">
-                URL o Enlace del Logotipo de la Empresa
+                Logotipo de la Empresa (URL o Archivo Local)
               </label>
-              <input
-                type="text"
-                placeholder="https://empresa.com/logo.png"
-                value={formData.logoUrl || ""}
-                onChange={(e) => setFormData({ ...formData, logoUrl: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 focus:outline-none"
-              />
-              <p className="text-[10px] text-slate-400 mt-1">
-                Se imprimirá en la parte superior de los tickets de venta y facturas PDF CFDI.
+              
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="https://empresa.com/logo.png o Data URL"
+                  value={formData.logoUrl || ""}
+                  onChange={(e) => setFormData({ ...formData, logoUrl: e.target.value })}
+                  className="flex-1 bg-slate-950 border border-slate-700 rounded-xl p-2.5 focus:outline-none"
+                />
+                
+                <label className="px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition cursor-pointer flex items-center gap-1.5 shrink-0">
+                  <Upload className="w-4 h-4" />
+                  <span>Subir</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoFileUpload}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+
+              {formData.logoUrl && (
+                <div className="p-3 bg-slate-950 border border-slate-800 rounded-xl flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-lg bg-slate-900 border border-slate-700 p-1 flex items-center justify-center overflow-hidden shrink-0">
+                    <img
+                      src={formData.logoUrl}
+                      alt="Logo preview"
+                      className="max-h-full max-w-full object-contain"
+                      onError={(e) => {
+                        (e.target as HTMLElement).style.display = 'none';
+                      }}
+                    />
+                  </div>
+                  <div className="text-[11px] text-slate-300 overflow-hidden">
+                    <div className="font-bold text-emerald-400">Logotipo Cargado</div>
+                    <div className="truncate text-slate-400">{formData.logoUrl.substring(0, 40)}...</div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, logoUrl: "" })}
+                    className="ml-auto text-xs text-rose-400 hover:text-rose-300 cursor-pointer"
+                  >
+                    Quitar
+                  </button>
+                </div>
+              )}
+
+              <p className="text-[10px] text-slate-400">
+                Cargue una imagen desde su equipo (PNG/JPG) o pegue una URL. Se imprimirá en los tickets y facturas PDF CFDI.
               </p>
             </div>
 

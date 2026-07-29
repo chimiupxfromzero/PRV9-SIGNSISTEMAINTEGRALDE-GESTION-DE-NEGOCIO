@@ -323,8 +323,14 @@ export interface PurchaseOrder {
 }
 
 export interface AIAssistantSettings {
-  modelType: "starter_local_gguf" | "gemini_flash_cloud";
-  localModelName: "Llama-3.2-3B-Instruct-GGUF" | "Mistral-7B-PV9-Local" | "Phi-3-Mini-GGUF";
+  mode: "CLOUD_GEMINI" | "OPENROUTER_FREE" | "GROQ_FREE" | "LOCAL_GGUF";
+  provider?: "gemini" | "openrouter" | "groq" | "ollama";
+  selectedModel: string;
+  customApiKey?: string;
+  ggufEndpoint: string;
+  ggufModelName: string;
+  modelType?: string;
+  localModelName?: string;
   voiceOutputEnabled: boolean;
   autoReadVoice: boolean;
   voiceName: "Kore" | "Puck" | "Zephyr" | "Fenrir" | "Charon";
@@ -374,7 +380,7 @@ export interface BusinessConfig {
   backupIntervalHours: number;
 }
 
-export type ThemeName = "claro_elegante" | "oscuro_ejecutivo" | "esmeralda_comercial" | "azul_corporativo" | "pizarra";
+export type ThemeName = "frosted_glass" | "dark_pro" | "cyber_neon" | "emerald_executive" | "light_modern";
 
 export interface ThemeConfig {
   theme: ThemeName;
@@ -382,10 +388,22 @@ export interface ThemeConfig {
   compactMode: boolean;
 }
 
-export interface AISettings {
-  mode: "CLOUD_GEMINI" | "LOCAL_GGUF";
+export interface AIAssistantSettings {
+  mode: "CLOUD_GEMINI" | "OPENROUTER_FREE" | "GROQ_FREE" | "LOCAL_GGUF";
+  provider?: "gemini" | "openrouter" | "groq" | "ollama";
+  selectedModel: string;
+  customApiKey?: string;
   ggufEndpoint: string;
   ggufModelName: string;
+  voiceOutputEnabled: boolean;
+  autoReadVoice: boolean;
+  voiceName: "Kore" | "Puck" | "Zephyr" | "Fenrir" | "Charon";
+  systemBehaviorPrompt: string;
   temperature: number;
-  contextWindow: number;
+  embeddedPermissions: {
+    canQuerySales: boolean;
+    canQueryInventory: boolean;
+    canLogExpenses: boolean;
+    canCreateReports: boolean;
+  };
 }
