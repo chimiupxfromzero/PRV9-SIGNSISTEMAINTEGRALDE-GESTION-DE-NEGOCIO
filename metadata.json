@@ -1,0 +1,6 @@
+{
+  "name": "PV9 ERP+POS",
+  "description": "Sistema integral ERP y Punto de Venta con gestión de ventas, inventario, clientes, nómina, CFDI 4.0, respaldos en la nube y Asistente IA con voz",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
