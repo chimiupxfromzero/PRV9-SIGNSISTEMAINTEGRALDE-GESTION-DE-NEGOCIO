@@ -101,7 +101,7 @@ interface AppContextType {
   cancelSale: (saleId: string, reason: string) => void;
   processRefund: (saleId: string, reason: string, returnToStock: boolean) => Refund;
 
-  addCustomer: (cust: Omit<Customer, "id" | "createdAt" | "salesCount" | "currentCreditDebt">) => void;
+  addCustomer: (cust: Omit<Customer, "id" | "createdAt" | "salesCount" | "currentCreditDebt">) => Customer;
   updateCustomer: (cust: Customer) => void;
 
   addEmployee: (emp: Omit<Employee, "id">) => void;
@@ -641,7 +641,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     );
   };
 
-  const addCustomer = (c: Omit<Customer, "id" | "createdAt" | "salesCount" | "currentCreditDebt">) => {
+  const addCustomer = (c: Omit<Customer, "id" | "createdAt" | "salesCount" | "currentCreditDebt">): Customer => {
     const newCust: Customer = {
       ...c,
       id: `cust-${Date.now()}`,
@@ -650,6 +650,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       currentCreditDebt: 0,
     };
     setCustomers((prev) => [...prev, newCust]);
+    return newCust;
   };
 
   const updateCustomer = (c: Customer) => {

@@ -71,7 +71,7 @@ export const POSModule: React.FC = () => {
     e.preventDefault();
     if (!newCustName.trim()) return;
 
-    addCustomer({
+    const created = addCustomer({
       name: newCustName,
       rfc: newCustRfc || "XAXX010101000",
       razonSocial: newCustName.toUpperCase(),
@@ -81,6 +81,10 @@ export const POSModule: React.FC = () => {
       phone: newCustPhone,
       creditLimit: newCustCredit,
     });
+
+    if (created && created.id) {
+      setSelectedCustomerId(created.id);
+    }
 
     setShowQuickCustomerModal(false);
     setNewCustName("");
@@ -177,8 +181,12 @@ export const POSModule: React.FC = () => {
     }
 
     const saleResult = addSale(cart, paymentMethod, amountReceived || cartTotal, selectedCustomerId);
+    if (requestFactura) {
+      stampCFDI(saleResult.id);
+    }
     setCompletedSale(saleResult);
     setShowPaymentModal(false);
+    setRequestFactura(false);
     setCart([]);
     setAmountReceived(0);
   };
